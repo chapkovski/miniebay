@@ -1,4 +1,5 @@
-#Mini ebay-like auction
+# Mini ebay-like auction
+
 A small piece of code based on channels to demonstrate how to create
 simple auctions in oTree
 ---
