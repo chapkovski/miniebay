@@ -1,0 +1,140 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree_tags %}
+
+{% block title %}
+    Auction
+{% endblock %}
+
+{% block content %}
+
+<div class="instructions well well-lg">
+<p>
+  You are competing with <b>{{Constants.num_others}}</b> other  participants for a prize of
+  <b>{{Constants.prize}}</b>.
+</p>
+<p>A person who offers the highest price will get the prize. </p>
+<p>
+  You have <b>{{Constants.endowment}}</b> to spend in this auction.
+</p>
+
+<p>
+  Each click on the button will raise the price that you will pay by 10 points.
+</p>
+<p>
+  All other participants have <b>{{Constants.extra_time}}</b> seconds to increase the price.</b>
+</p>
+</div>
+
+<div id="otree-timeout">Time left to the end of the auction: <span id="minutes"></span>:<span id="seconds"></span></div>
+<div>current price: <b><span id="price"></span></b></div>
+<div id="winner"></div>
+<input id='ebaybtn'
+class="btn  btn-large btn-primary next-button" onclick='sendmessage()'
+type="button"  value="sBuy">
+<br>
+
+
+
+{% endblock %}
+
+
+{% block scripts %}
+<script type="text/javascript" src="/static/otree/js/jquery.countdown.js"></script>
+<script>
+  var milliseconds = {{time_left}}*1000;
+  var winner = 'You are the largest bidder right now';
+  var loser = 'You are NOT the largest bidder right now!';
+  update_create_countdown(milliseconds);
+
+  function update_create_countdown(milliseconds) {
+            $('div#otree-timeout').show();
+            var currentDate = new Date();
+
+            $('#otree-timeout').countdown(currentDate.valueOf() + milliseconds, function(event) {
+
+                switch(event.type) {
+                    case "seconds":
+                        $(this).find('span#seconds').html(event.value);
+                        break;
+                    case "minutes":
+                        $(this).find('span#minutes').html(event.lasting.hours * 60 + parseInt(event.value));
+                        break;
+                    case "finished":
+                        $('#otree-timeout').hide(duration=0);
+                        $('<input>').attr({
+                            type: 'hidden',
+                            name: 'auto_submit',
+                            value: '1'
+                        }).appendTo('form');
+                        $('#form').submit();
+
+                        break;
+                }
+            });
+  };
+
+
+function curtime() {
+    return (new Date().getTime());
+}
+
+window.onload = function() {
+  $('#curdate').html(curtime());
+  var curprice = {{group.price}}
+  $('#price').html(curprice);
+  curbtntxt = curprice>0?'Raise price':'Buy';
+     $('#ebaybtn').prop('value', curbtntxt);
+
+  var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+  var socket = new WebSocket(ws_scheme + '://' + window.location.host + "/ebay/group{{group.id}}");
+
+
+  // Handle any errors that occur.
+  socket.onerror = function(error) {
+    console.log('WebSocket Error: ' + error);
+  };
+
+sendmessage = function(what) {
+  var msg = {
+          id: {{player.id}},
+          id_in_group: {{player.id_in_group}},
+      };
+      if(socket.readyState === socket.OPEN){
+          socket.send(JSON.stringify(msg));
+      }
+  //  socket.send('{{player.id}}');
+
+}
+  // Show a connected message when the WebSocket is opened.
+  socket.onopen = function(event) {
+    console.log('connected to oTree');
+  };
+
+
+  // Handle messages sent by the server.
+  socket.onmessage = function(event) {
+    var obj = jQuery.parseJSON(event.data);
+    curprice = obj.price;
+    $('#price').html(curprice);
+    curbtntxt = curprice>0?'Raise price':'Buy';
+    $('#ebaybtn').prop('value', curbtntxt);
+    $('#dateend').html(obj.newauctionendtime);
+    $('#time_left').html(obj.time_left);
+    curwinner = obj.winner=={{player.id_in_group}}? winner:loser;
+    $('#winner').html(curwinner);
+    milliseconds = obj.time_left*1000;
+    selectedDate = new Date().valueOf() + milliseconds;
+    update_create_countdown(milliseconds);
+  };
+
+
+  // Show a disconnected message when the WebSocket is closed.
+  socket.onclose = function(event) {
+    console.log('disconnected from oTree');
+  };
+
+
+};
+
+</script>
+{% endblock %}
