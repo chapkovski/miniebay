@@ -25,7 +25,8 @@
         </p>
     </div>
 
-    <div id="otree-timeout">Time left to the end of the auction: <span id="otree-timer__time-left"></span>
+    <div id="otree-timeout">
+        <h3>Time left to the end of the auction: <span id="otree-timer__time-left" class="badge large"></span></h3>
     </div>
     <div>current price: <b><span id="price"></span></b></div>
     <div id="winner"></div>
@@ -42,7 +43,9 @@
 {% block scripts %}
     <script type="text/javascript" src="/static/otree/js/jquery.countdown.min.js"></script>
     <script>
-        var milliseconds ={{time_left}}* 1000;
+        var milliseconds =
+        {{time_left}}*
+        1000;
         var winner = 'You are the largest bidder right now';
         var loser = 'You are NOT the largest bidder right now!';
         update_create_countdown(milliseconds);
@@ -76,7 +79,7 @@
         window.onload = function () {
             $('#curdate').html(curtime());
             var curprice = {{group.price}};
-                $('#price').html(curprice);
+            $('#price').html(curprice);
             curbtntxt = curprice > 0 ? 'Raise price' : 'Buy';
             $('#ebaybtn').prop('value', curbtntxt);
 
@@ -130,4 +133,12 @@
         };
 
     </script>
+{% endblock %}
+
+{% block styles %}
+    <style>
+        .large {
+            font-size: 120%;
+        }
+    </style>
 {% endblock %}
