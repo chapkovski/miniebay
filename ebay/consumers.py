@@ -14,11 +14,8 @@ def ws_connect(message, group_name):
 # Connected to websocket.receive
 def ws_message(message, group_name):
     group_id = group_name[5:]
-    print('GROUP ID', group_id)
-    print('PLAYER::::', message['text'])
     jsonmessage = json.loads(message.content['text'])
     mygroup = OtreeGroup.objects.get(id=group_id)
-    curbuyer_id = jsonmessage['id']
     curbuyer_id_in_group = jsonmessage['id_in_group']
     mygroup.price += 10
     mygroup.buyer = curbuyer_id_in_group
@@ -28,7 +25,6 @@ def ws_message(message, group_name):
     time_left = round(mygroup.auctionenddate - now)
     textforgroup = json.dumps({
                                 "price": mygroup.price,
-                                "newauctionendtime": mygroup.auctionenddate,
                                 "time_left": time_left,
                                 "winner": curbuyer_id_in_group,
                                 })

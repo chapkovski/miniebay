@@ -17,8 +17,8 @@ class Constants(BaseConstants):
     name_in_url = 'ebay'
     players_per_group = 3
     num_rounds = 1
-    starting_time = 30
-    extra_time = 20
+    starting_time = 15
+    extra_time = 15
     endowment = 100
     prize = 200
     num_others = players_per_group - 1
