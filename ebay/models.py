@@ -6,6 +6,7 @@ import random
 from django import forms
 import time
 import datetime
+
 author = 'Filipp Chapkovskii, UZH, chapkovski@gmail.com'
 
 doc = """
@@ -17,11 +18,12 @@ class Constants(BaseConstants):
     name_in_url = 'ebay'
     players_per_group = 3
     num_rounds = 1
-    starting_time = 15
+    starting_time = 1500
     extra_time = 15
     endowment = 100
     prize = 200
     num_others = players_per_group - 1
+    step = 10
 
 
 class Subsession(BaseSubsession):
@@ -34,20 +36,21 @@ class Group(BaseGroup):
     price = models.IntegerField()
     auctionstartdate = models.FloatField()
     auctionenddate = models.FloatField()
-    buyer = models.IntegerField()
+    winner = models.IntegerField()
 
     def time_left(self):
-            now = time.time()
-            time_left = self.auctionenddate - now
-            time_left = round(time_left) if time_left > 0 else 0
-            return time_left
+        now = time.time()
+        time_left = self.auctionenddate - now
+        time_left = round(time_left) if time_left > 0 else 0
+        return time_left
 
     def set_payoffs(self):
         for p in self.get_players():
-            if str(self.buyer) == str(p.id_in_group):
+            if str(self.winner) == str(p.id_in_group):
                 p.payoff = Constants.endowment - self.price + Constants.prize
             else:
                 p.payoff = Constants.endowment
+
 
 class Player(BasePlayer):
     ...

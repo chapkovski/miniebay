@@ -3,7 +3,8 @@ from channels.generic.websocket import WebsocketConsumer
 import json
 from asgiref.sync import async_to_sync
 from termcolor import colored
-from ebay.models import Player, Group
+from ebay.models import Player, Group, Constants
+import time
 
 
 def debug(*args):
@@ -13,12 +14,12 @@ def debug(*args):
 
 class EbayConsumer(WebsocketConsumer):
     def connect(self):
-        self.group_pk = self.scope['url_route']['kwargs']['group_pk']
-        self.player_pk = self.scope['url_route']['kwargs']['player_pk']
+        self.group_pk = int(self.scope['url_route']['kwargs']['group_pk'])
+        self.player_pk = int(self.scope['url_route']['kwargs']['player_pk'])
         self.room_group_name = 'ebay_%s' % self.group_pk
         self.group = Group.objects.get(pk=self.group_pk)
-        self.player = Player.objects.get(plk=self.player_pk)
-        debug(self.group_pk, self.room_group_name)
+        self.player = Player.objects.get(pk=self.player_pk)
+        debug(self.group_pk, self.room_group_name, self.player_pk)
 
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
@@ -36,35 +37,25 @@ class EbayConsumer(WebsocketConsumer):
 
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        message = text_data_json['message']
-
-        # Send message to room group
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
-            {
-                'type': 'new_bid',
-                'message': message,
-            }
-        )
+        if text_data_json.get('bid_up'):
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'new_bid',
+                    'winner': self.player_pk,
+                }
+            )
 
     # Receive message from room group
     def new_bid(self, event):
-        group_id = group_name[5:]
-        jsonmessage = json.loads(message.content['text'])
-        mygroup = OtreeGroup.objects.get(id=group_id)
-        curbuyer_id_in_group = jsonmessage['id_in_group']
-        mygroup.price += 10
-        mygroup.buyer = curbuyer_id_in_group
+        winner = event['winner']
+        self.group.price += Constants.step
+        self.group.winner = winner
         now = time.time()
-        mygroup.auctionenddate = now + Constants.extra_time
-        mygroup.save()
-        time_left = round(mygroup.auctionenddate - now)
-        textforgroup = json.dumps({
-            "price": mygroup.price,
-            "time_left": time_left,
-            "winner": curbuyer_id_in_group,
-        })
+        self.group.auctionenddate = now + Constants.extra_time
+        self.group.save()
         self.send(text_data=json.dumps({
-            'message': message,
-            'user': user
+            "price": self.group.price,
+            "time_left": Constants.extra_time,
+            "winner": winner,
         }))

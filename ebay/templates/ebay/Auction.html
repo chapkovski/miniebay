@@ -30,10 +30,9 @@
     </div>
     <div>current price: <b><span id="price"></span></b></div>
     <div id="winner"></div>
-    <input id='ebaybtn'
-           class="btn  btn-large btn-primary next-button" onclick='sendmessage()'
-           type="button" value="sBuy">
-    <br>
+    <button id='ebaybtn' role='button' class="btn  btn-large btn-primary next-button" type="button">Make a new bid
+    </button>
+
 
 
 
@@ -43,96 +42,10 @@
 {% block scripts %}
     <script type="text/javascript" src="/static/otree/js/jquery.countdown.min.js"></script>
     <script>
-        var milliseconds =
-        {{time_left}}*
-        1000;
-        var winner = 'You are the largest bidder right now';
-        var loser = 'You are NOT the largest bidder right now!';
-        update_create_countdown(milliseconds);
-
-        function update_create_countdown(milliseconds) {
-            $('div#otree-timeout').show();
-            var currentDate = new Date();
-
-            $('span#otree-timer__time-left').countdown(currentDate.valueOf() + milliseconds)
-                .on('update.countdown', function (event) {
-                    // %-N is "Total count of minutes till the end, non-padded"
-                    // %S is seconds left
-                    var format = '%-N:%S';
-                    $(this).html(event.strftime(format));
-                })
-                .on('finish.countdown', function (event) {
-                    $('<input>').attr({
-                        type: 'hidden',
-                        name: 'timeout_happened',
-                        value: '1'
-                    }).appendTo('form');
-                    $('#form').submit();
-                });
-        };
-
-
-        function curtime() {
-            return (new Date().getTime());
-        }
-
-        window.onload = function () {
-            $('#curdate').html(curtime());
-            var curprice = {{group.price}};
-            $('#price').html(curprice);
-            curbtntxt = curprice > 0 ? 'Raise price' : 'Buy';
-            $('#ebaybtn').prop('value', curbtntxt);
-
-            var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-            var socket = new WebSocket(ws_scheme + '://' + window.location.host + "/ebay/group{{group.id}}");
-
-
-            // Handle any errors that occur.
-            socket.onerror = function (error) {
-                console.log('WebSocket Error: ' + error);
-            };
-
-            sendmessage = function (what) {
-                var msg = {
-                    id: {{player.id}},
-                    id_in_group: {{player.id_in_group}},
-                };
-                if (socket.readyState === socket.OPEN) {
-                    socket.send(JSON.stringify(msg));
-                }
-
-            }
-            // Show a connected message when the WebSocket is opened.
-            socket.onopen = function (event) {
-                console.log('connected to oTree');
-            };
-
-
-            // Handle messages sent by the server.
-            socket.onmessage = function (event) {
-                var obj = jQuery.parseJSON(event.data);
-                curprice = obj.price;
-                $('#price').html(curprice);
-                curbtntxt = curprice > 0 ? 'Raise price' : 'Buy';
-                $('#ebaybtn').prop('value', curbtntxt);
-                $('#time_left').html(obj.time_left);
-                curwinner = obj.winner =={{player.id_in_group}} ? winner : loser;
-                $('#winner').html(curwinner);
-                milliseconds = obj.time_left * 1000;
-                selectedDate = new Date().valueOf() + milliseconds;
-                update_create_countdown(milliseconds);
-            };
-
-
-            // Show a disconnected message when the WebSocket is closed.
-            socket.onclose = function (event) {
-                console.log('disconnected from oTree');
-            };
-
-
-        };
-
+        const group_pk = {{ group.pk }};
+        const player_pk = {{ player.pk }};
     </script>
+    <script src="{% static 'ebay/channel_connector.js' %}"></script>
 {% endblock %}
 
 {% block styles %}
