@@ -1,3 +1,13 @@
+from django.urls import re_path
+
+from . import consumers
+
+websocket_routes = [
+    re_path(r'ws/chat/(?P<room_name>\w+)/$', consumers.ChatConsumer),
+]
+
+
+# OLD ONES:
 from channels.routing import route
 from .consumers import ws_message, ws_connect, ws_disconnect
 from otree.channels.routing import channel_routing
