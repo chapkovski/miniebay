@@ -28,7 +28,7 @@
     <div id="otree-timeout">
         <h3>Time left to the end of the auction: <span id="ebay-clock" class="badge large"></span></h3>
     </div>
-    <div>current price: <b><span id="price"></span></b></div>
+    <div>Current price: <b><span id="price">{{ group.price }}</span></b></div>
     <div id="winner"></div>
     <button id='ebaybtn' role='button' class="btn  btn-large btn-primary next-button" type="button">Make a new bid
     </button>
@@ -45,7 +45,9 @@
     <script>
         const group_pk = {{ group.pk }};
         const player_pk = {{ player.pk }};
-        let auction_date_over = {{group.auctionenddate|json }};
+        const id_in_group = {{ player.id_in_group }};
+        const current_winner= {{ group.winner|json}};
+        let auction_date_over = {{group.auction_end_date|json }};
 
     </script>
     <script src="{% static 'ebay/channel_connector.js' %}"></script>

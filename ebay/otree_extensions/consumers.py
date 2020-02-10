@@ -42,7 +42,7 @@ class EbayConsumer(WebsocketConsumer):
                 self.room_group_name,
                 {
                     'type': 'new_bid',
-                    'winner': self.player_pk,
+                    'winner': self.player.id_in_group,
                 }
             )
 
@@ -52,10 +52,10 @@ class EbayConsumer(WebsocketConsumer):
         self.group.price += Constants.step
         self.group.winner = winner
         now = time.time()
-        self.group.auctionenddate = now + Constants.extra_time
+        self.group.auction_end_date = now + Constants.extra_time
         self.group.save()
         self.send(text_data=json.dumps({
             "price": self.group.price,
-            "new_time_over": self.group.auctionenddate,
+            "new_time_over": self.group.auction_end_date,
             "winner": winner,
         }))

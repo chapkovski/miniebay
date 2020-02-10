@@ -8,8 +8,8 @@ import time
 class WP(WaitPage):
     def after_all_players_arrive(self):
         now = time.time()
-        self.group.auctionstartdate = now
-        self.group.auctionenddate = now + Constants.starting_time
+        self.group.auction_start_date = now
+        self.group.auction_end_date = now + Constants.starting_time
 
 
 class Auction(Page):

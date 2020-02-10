@@ -7,8 +7,21 @@ const ebaySocketPath = ws_scheme + '://' + window.location.host + "/ebay/" + gro
 const ebaySocket = new WebSocket(ebaySocketPath);
 const newBidButton = $('button#ebaybtn');
 const clock = $('span#ebay-clock');
+const price = $('span#price');
+const winnerdiv = $('#winner');
 const MILLISECS = 1000;
 
+switch (current_winner) {
+    case null:
+        winnerdiv.html('No bids yet')
+        break;
+    case id_in_group:
+        winnerdiv.html(winner);
+        break;
+    default:
+        winnerdiv.html(loser);
+}
+;
 const update_create_timer = (time_over_sec) => {
     const time_over = new Date(time_over_sec * MILLISECS)
     clock.countdown(time_over).on('update.countdown', function (event) {
@@ -28,9 +41,10 @@ update_create_timer(auction_date_over);
 
 ebaySocket.onmessage = function (e) {
     const data = JSON.parse(e.data);
-    console.log(data);
-    update_create_timer(data.new_time_over);
 
+    update_create_timer(data.new_time_over);
+    price.html(data.price)
+    winnerdiv.html(data.winner === id_in_group ? winner : loser)
 
 };
 
