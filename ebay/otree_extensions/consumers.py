@@ -7,9 +7,6 @@ from ebay.models import Player, Group, Constants
 import time
 
 
-def debug(*args):
-    s = json.dumps(args)
-    print(colored(s, 'green'))
 
 
 class EbayConsumer(WebsocketConsumer):
@@ -19,7 +16,7 @@ class EbayConsumer(WebsocketConsumer):
         self.room_group_name = 'ebay_%s' % self.group_pk
         self.group = Group.objects.get(pk=self.group_pk)
         self.player = Player.objects.get(pk=self.player_pk)
-        debug(self.group_pk, self.room_group_name, self.player_pk)
+
 
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
