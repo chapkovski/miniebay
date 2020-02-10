@@ -26,7 +26,7 @@
     </div>
 
     <div id="otree-timeout">
-        <h3>Time left to the end of the auction: <span id="otree-timer__time-left" class="badge large"></span></h3>
+        <h3>Time left to the end of the auction: <span id="ebay-clock" class="badge large"></span></h3>
     </div>
     <div>current price: <b><span id="price"></span></b></div>
     <div id="winner"></div>
@@ -40,10 +40,13 @@
 
 
 {% block scripts %}
-    <script type="text/javascript" src="/static/otree/js/jquery.countdown.min.js"></script>
+    <script src="{% static 'otree/js/jquery.countdown.min.js' %}"></script>
+
     <script>
         const group_pk = {{ group.pk }};
         const player_pk = {{ player.pk }};
+        let auction_date_over = {{group.auctionenddate|json }};
+
     </script>
     <script src="{% static 'ebay/channel_connector.js' %}"></script>
 {% endblock %}

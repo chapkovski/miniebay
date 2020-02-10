@@ -56,6 +56,6 @@ class EbayConsumer(WebsocketConsumer):
         self.group.save()
         self.send(text_data=json.dumps({
             "price": self.group.price,
-            "time_left": Constants.extra_time,
+            "new_time_over": self.group.auctionenddate,
             "winner": winner,
         }))
