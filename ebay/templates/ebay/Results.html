@@ -6,8 +6,33 @@
 {% endblock %}
 
 {% block content %}
-<div>Your payoff: <b>{{player.payoff}}</b></div>
 
-{% next_button %}
+    <table class="table table-striped table-hover">
+        <tr>
+            <td>Initial endowment</td>
+            <td class="text-right">{{ Constants.endowment|c }}</td>
+        </tr>
+    <tr>
+            <td>Value of the good:</td>
+            <td class="text-right">{{ Constants.prize }}</td>
+        </tr>
+        <tr>
+            <td>Final price:</td>
+            <td class="text-right">{{ group.price }}</td>
+        </tr>
+        <tr>
+            <td>You won the auction:</td>
+            <td class="text-right">{% if player.id_in_group == group.winner %}Yes{% else %}No{% endif %}</td>
+        </tr>
+        <tr class="table-success">
+            <td>Your payoff:</td>
+            <td class="text-right"><b>{{ player.payoff }}</b></td>
+        </tr>
+    </table>
+
+
+    <div></div>
+
+    {% next_button %}
 
 {% endblock %}

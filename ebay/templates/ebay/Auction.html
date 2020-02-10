@@ -6,30 +6,47 @@
 {% endblock %}
 
 {% block content %}
+    <div class="card">
 
-    <div class="instructions well well-lg">
-        <p>
-            You are competing with <b>{{ Constants.num_others }}</b> other participants for a prize of
-            <b>{{ Constants.prize }}</b>.
-        </p>
-        <p>A person who offers the highest price will get the prize. </p>
-        <p>
-            You have <b>{{ Constants.endowment }}</b> to spend in this auction.
-        </p>
+        <div class="card-body">
+            <h5 class="card-title">Instructions</h5>
+            <p>
+                You are competing with <b>{{ Constants.num_others }}</b> other participants for a prize of
+                <b>{{ Constants.prize }}</b>.
+            </p>
+            <p>A person who offers the highest price will get the prize. </p>
+            <p>
+                You have <b>{{ Constants.endowment }}</b> to spend in this auction.
+            </p>
 
-        <p>
-            Each click on the button will raise the price that you will pay by 10 points.
-        </p>
-        <p>
-            All other participants have <b>{{ Constants.extra_time }}</b> seconds to increase the price.</b>
-        </p>
+            <p>
+                Each click on the button will raise the price that you will pay by 10 points.
+            </p>
+            <p>
+                All other participants have <b>{{ Constants.extra_time }}</b> seconds to increase the price.</b>
+            </p>
+        </div>
     </div>
 
-    <div id="otree-timeout">
-        <h3>Time left to the end of the auction: <span id="ebay-clock" class="badge large"></span></h3>
-    </div>
-    <div>Current price: <b><span id="price">{{ group.price }}</span></b></div>
-    <div id="winner"></div>
+    <table class="table table-striped table-hover">
+        <tr>
+            <td>Time left to the end of the auction:</td>
+            <td class="text-right"><span id="ebay-clock" class="badge large"></span></td>
+        </tr>
+        <tr>
+            <td>Current price:</td>
+            <td class="text-right"><b><span id="price">{{ group.price }}</span></b></td>
+        </tr>
+        <tr>
+            <td colspan="2" id="winner_wrapper" class="text-center">
+                <div id="winner"></div>
+            </td>
+
+        </tr>
+    </table>
+
+
+
     <button id='ebaybtn' role='button' class="btn  btn-large btn-primary next-button" type="button">Make a new bid
     </button>
 
@@ -46,7 +63,7 @@
         const group_pk = {{ group.pk }};
         const player_pk = {{ player.pk }};
         const id_in_group = {{ player.id_in_group }};
-        const current_winner= {{ group.winner|json}};
+        const current_winner = {{ group.winner|json}};
         let auction_date_over = {{group.auction_end_date|json }};
 
     </script>

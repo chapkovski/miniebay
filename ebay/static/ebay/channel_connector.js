@@ -9,6 +9,7 @@ const newBidButton = $('button#ebaybtn');
 const clock = $('span#ebay-clock');
 const price = $('span#price');
 const winnerdiv = $('#winner');
+const winner_wrapper = $('#winner_wrapper');
 const MILLISECS = 1000;
 
 switch (current_winner) {
@@ -17,9 +18,11 @@ switch (current_winner) {
         break;
     case id_in_group:
         winnerdiv.html(winner);
+        winner_wrapper.removeClass('table-danger').addClass('table-success')
         break;
     default:
         winnerdiv.html(loser);
+        winner_wrapper.removeClass('table-success').addClass('table-danger')
 }
 ;
 const update_create_timer = (time_over_sec) => {
@@ -44,7 +47,13 @@ ebaySocket.onmessage = function (e) {
 
     update_create_timer(data.new_time_over);
     price.html(data.price)
-    winnerdiv.html(data.winner === id_in_group ? winner : loser)
+    if (data.winner === id_in_group) {
+        winnerdiv.html(winner);
+        winner_wrapper.removeClass('table-danger').addClass('table-success')
+    } else {
+        winnerdiv.html(loser);
+        winner_wrapper.removeClass('table-success').addClass('table-danger')
+    }
 
 };
 
